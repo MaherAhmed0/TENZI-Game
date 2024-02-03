@@ -6,7 +6,7 @@ import Confetti from "react-confetti"
 import useWindowSize from 'react-use/lib/useWindowSize'
 
 function App() {
-
+  const [startGame, setStartGame] = React.useState(false);
   const [dice, setDice] = React.useState(newDices());
   const [tenzi, setTenzi] = React.useState(false);
   const { width, height } = useWindowSize();
@@ -35,28 +35,34 @@ function App() {
   }
 
   function rollDice() {
-    if (!tenzi) {
-      setDice(prvDice => prvDice.map(die => {
-        return die.isHeld ?
-          die :
-          {
-            value: Math.ceil(Math.random() * 6),
-            isHeld: false,
-            id: nanoid()
-          }
-      }))
+    if (startGame) {
+      if (!tenzi) {
+        setDice(prvDice => prvDice.map(die => {
+          return die.isHeld ?
+            die :
+            {
+              value: Math.ceil(Math.random() * 6),
+              isHeld: false,
+              id: nanoid()
+            }
+        }))
+      } else {
+        setTenzi(false);
+        setDice(newDices());
+      }
     } else {
-      setTenzi(false);
-      setDice(newDices());
+      setStartGame(true)
     }
   }
 
   function holdDice(id) {
-    setDice(prvDice => prvDice.map(die => {
-      return die.id === id ?
-        { ...die, isHeld: !die.isHeld } :
-        die
-    }))
+    if(startGame){
+      setDice(prvDice => prvDice.map(die => {
+        return die.id === id ?
+          { ...die, isHeld: !die.isHeld } :
+          die
+      }))
+    }
   }
 
   const diceElements = dice.map(die => (
@@ -66,13 +72,19 @@ function App() {
   return (
     <main>
       {tenzi && <Confetti width={width} height={height} />}
-      <h1 className="title">Tenzies</h1>
+      <h1 className="title">TENZI</h1>
       <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
       <div className="container">
         {diceElements}
       </div>
       <button className='roll' onClick={rollDice}>
-        {tenzi ? "New Game" : "Roll"}
+        {
+          !startGame ?
+            "Start" :
+            tenzi ?
+              "New Game" :
+              "Roll"
+        }
       </button>
     </main>
   );
