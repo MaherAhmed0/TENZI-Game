@@ -10,6 +10,8 @@ function App() {
   const [dice, setDice] = React.useState(newDices());
   const [rolls, setRolls] = React.useState(0);
   const [bestRolls, setBestRolls] = React.useState(JSON.parse(localStorage.getItem('bestRolls')) || 0);
+  const [timer, setTimer] = React.useState(0)
+  const [bestTime, setBestTime] = React.useState(JSON.parse(localStorage.getItem('bestTime')) || 0);
   const [tenzi, setTenzi] = React.useState(false);
   const { width, height } = useWindowSize();
 
@@ -19,14 +21,28 @@ function App() {
     const allDicesSame = dice.every(die => die.value === checkValue);
     if (allDicesHeld && allDicesSame) {
       setTenzi(true);
-      console.log("YOU WON!!!");
       if ((rolls < bestRolls) || bestRolls === 0) {
         localStorage.setItem("bestRolls", rolls);
         setBestRolls(rolls);
       }
+      if (timer < bestTime || bestTime === 0) {
+        localStorage.setItem('bestTime', JSON.stringify(timer));
+        setBestTime(timer);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dice])
+
+  React.useEffect(() => {
+    let timerInterval;
+
+    if (startGame && !tenzi) {
+      timerInterval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 0.1);
+      }, 100);
+    }
+    return () => clearInterval(timerInterval);
+  }, [startGame, tenzi]);
 
   function newDices() {
     const newDice = []
@@ -58,10 +74,12 @@ function App() {
         setTenzi(false);
         setRolls(0)
         setDice(newDices());
+        setTimer(0)
       }
     } else {
       setStartGame(true)
       setRolls(0)
+      setTimer(0)
     }
   }
 
@@ -99,13 +117,15 @@ function App() {
         </button>
         <div className='scores'>
           <div className='rolls'><p>Rolls <br /> {rolls}</p></div>
-          <div className='timer'><p>Timer <br /> {0}</p></div>
+          <div className='timer'><p>Timer <br /> {timer.toFixed(2)}s</p></div>
         </div>
       </main>
-      <div className='best-scores'>
-        <div className='best-time'><p>Best Rolls <br /> {bestRolls}</p></div>
-        <div className='best-rolls'><p>Best Time <br /> {0}</p></div>
-      </div>
+      {bestRolls !== 0 || bestTime !== 0 ? (
+        <div className='best-scores'>
+          {bestRolls !== 0 && <div className='best-time'><p>Best Rolls <br /> {bestRolls}</p></div>}
+          {bestTime !== 0 && <div className='best-rolls'><p>Best Time <br /> {bestTime.toFixed(2)}s</p></div>}
+        </div>
+      ) : null}
     </>
   );
 }
