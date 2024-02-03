@@ -18,7 +18,7 @@ main {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  margin: 7rem auto;
+  margin: 3rem auto 0;
 }
 
 .title {
@@ -153,4 +153,39 @@ main {
 
 .face-5 .row:nth-of-type(2) {
   justify-content: center;
+}
+
+.scores {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.2rem;
+}
+
+.best-scores {
+  margin: 0.4rem auto;
+  background-color: #F5F5F5;
+  max-width: 400px;
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 460px) {
+  .best-scores {
+    padding: 20px;
+  }
+}
+
+.rolls p,
+.timer p,
+.best-time p,
+.best-rolls p {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
 }
